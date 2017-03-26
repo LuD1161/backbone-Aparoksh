@@ -1,8 +1,6 @@
+# coding: utf-8
 from django.http import HttpResponse
 from django.shortcuts import render
-
-# Create your views here.
-# coding: utf-8
 import requests, json
 from pprint import pprint
 
@@ -12,24 +10,24 @@ fields = {'location': 'locations?query=', 'cuisine': 'cuisines?city_id=',
           'restaurant': 'restaurant?res_id=', 'review': 'reviews?res_id=21',
           'search': 'search?entity_id='}
 
+def home(request):
+	return render(request,'home.html')
 
-# https://developers.zomato.com/api/v2.1/search?&entity_type=city&q=el%20chico&sort=cost&order=desc
-
-
-def Restprint(location, query):
+def Restprint(location, query=None):
     header = {"User-agent": "curl/7.43.0", "Accept": "application/json", "user_key": zomato_api_key}
-    url = "https://developers.zomato.com/api/v2.1/" + fields['location'] + location
+    url = "https://developers.zomato.com/api/v2.1/" + str(fields['location']) + location
 
     response = requests.get(url, proxies={'https': "https://rit2015044:Iiita015@172.31.1.6:8080"}, headers=header)
     restJSON = response.json()
     if (restJSON['status'] != 'success'):
         return "Sorry No place found to your description"
     id = restJSON['location_suggestions'][0]['entity_id']
-    finalURL = url + fields['search'] + id + 'q=' + query+"&order=desc"
+    finalURL = url + str(fields['search']) + str(id) + 'q=' + query+"&order=desc"
     response = requests.get(finalURL, proxies={'https': "https://rit2015044:Iiita015@172.31.1.6:8080"}, headers=header)
 
     restJSON = response.json()
-    return restJSON
+    print(restJson)
+    return render(request,'food.html')
     # for restaurant in restJSON['best_rated_restaurant']:
     #     text = "Name of Restaurant : " + restaurant['restaurant']['name'] + "\n"
     #     text = text + "User Ratings : " + restaurant['restaurant']['user_rating']['rating_text'] + "\n"
@@ -44,12 +42,13 @@ def Restprint(location, query):
     #     print text
 
 
-Restprint("Allahabad")
+# Restprint("Allahabad")
 
 
-def search(request):
-    place = request.POST.get('place', None)
+def food(request):
+    place = request.POST.get('place')
+    print place
     cuisine = request.POST.get('cuisine', None)
     restaurant = request.POST.get('restaurant', None)
-    query = request.POST.get('q')
-    return HttpResponse(Restprint(place, cuisine), content_type="application/json")
+    query = str(restaurant)+str(cuisine)
+    return HttpResponse(Restprint(place, query), content_type="application/json")
