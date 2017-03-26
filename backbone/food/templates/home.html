@@ -1,0 +1,20 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+	<title>Find place to eat</title>
+	</head>
+	<body>
+		<h1>Search Resturants</h1>
+		<form action="/food" method="POST">
+    		{% csrf_token %}
+        <input name="place"  type="text" placeholder="City, town or postcode" value="" required>
+        <br>
+        <input name="couisine"  type="text" placeholder="Type of food" value="">
+        <br>
+        <input name="resturant"  type="text" placeholder="Resturants name" value="">
+        <br>
+        <button type="submit">Search</button>
+	</form>
+
+	</body>
+</html>
